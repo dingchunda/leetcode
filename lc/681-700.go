@@ -76,3 +76,28 @@ func maxAreaOfIsland(grid [][]int) int {
 	}
 	return maxArea
 }
+
+func searchBST(root *TreeNode, val int) *TreeNode {
+	var travel func(n *TreeNode, visitor func(node *TreeNode) bool) bool
+	travel = func(n *TreeNode, visitor func(node *TreeNode) bool) bool {
+		if n == nil {
+			return false
+		}
+		if travel(n.Left, visitor) {
+			return true
+		}
+		if visitor(n) {
+			return true
+		}
+		return travel(n.Right, visitor)
+	}
+	var ans *TreeNode
+	travel(root, func(node *TreeNode) bool {
+		if node.Val == val {
+			ans = node
+			return true
+		}
+		return false
+	})
+	return ans
+}

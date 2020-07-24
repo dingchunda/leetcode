@@ -57,3 +57,25 @@ func findKthNumber(n int, k int) int {
 	}
 	return dfs(1, k)
 }
+
+func levelOrderNrt(root *NrTreeNode) [][]int {
+	if root == nil {
+		return nil
+	}
+	var ans [][]int
+	var buf, tmp []*NrTreeNode
+	buf = append(buf, root)
+	for len(buf) > 0 {
+		tmp = tmp[:0]
+		var level []int
+		for _, n := range buf {
+			level = append(level, n.Val)
+			for _, c := range n.Children {
+				tmp = append(tmp, c)
+			}
+		}
+		ans = append(ans, level)
+		buf, tmp = tmp, buf
+	}
+	return ans
+}

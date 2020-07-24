@@ -1,7 +1,9 @@
 package lc
 
 import (
+	"math"
 	"math/rand"
+	"sort"
 	"strings"
 )
 
@@ -138,4 +140,98 @@ func longestSubstring(s string, k int) int {
 		}
 	}
 	return len(s)
+}
+
+type SolutionPickSec struct {
+	nums  []int
+	index []int
+}
+
+func (s *SolutionPickSec) Len() int {
+	return len(s.nums)
+}
+func (s *SolutionPickSec) Less(i, j int) bool {
+	return s.nums[i] < s.nums[j]
+}
+func (s *SolutionPickSec) Swap(i, j int) {
+	s.nums[i], s.nums[j], s.index[i], s.index[j] = s.nums[j], s.nums[i], s.index[j], s.index[i]
+}
+
+func ConstructorSolutionPickSec(nums []int) SolutionPickSec {
+	index := make([]int, len(nums))
+	for i := 0; i < len(nums); i++ {
+		index[i] = i
+	}
+	s := SolutionPickSec{
+		nums:  nums,
+		index: index,
+	}
+	sort.Sort(&s)
+	return s
+}
+
+func (this *SolutionPickSec) Pick(target int) int {
+	left := sort.Search(len(this.nums)-1, func(i int) bool {
+		return this.nums[i] >= target
+	})
+	right := left
+	if left < len(this.nums)-1 && this.nums[left+1] == target {
+		right = sort.Search(len(this.nums)-1, func(i int) bool {
+			return this.nums[i] > target
+		})
+	}
+
+	//fmt.Println(left,right)
+	return this.index[rand.Intn(right-left+1)+left]
+}
+
+type SolutionListPick struct {
+	head *ListNode
+}
+
+/** @param head The linked list's head.
+  Note that the head is guaranteed to be not null, so it contains at least one node. */
+func ConstructorSolutionListPick(head *ListNode) SolutionListPick {
+	return SolutionListPick{
+		head: head,
+	}
+}
+
+/** Returns a random node's value. */
+func (this *SolutionListPick) GetRandom() int {
+	big := rand.Intn(math.MaxInt32)
+	p := this.head
+	cnt := 0
+	for p != nil {
+		if cnt == big {
+			return p.Val
+		}
+		p = p.Next
+		cnt++
+	}
+	big = big % cnt
+	cnt = 0
+	p = this.head
+	for p != nil {
+		if cnt == big {
+			return p.Val
+		}
+		p = p.Next
+		cnt++
+	}
+	return -1
+}
+
+func canConstruct(ransomNote string, magazine string) bool {
+	hit := [26]int{}
+	for _, c := range magazine {
+		hit[c-'a']++
+	}
+	for _, c := range ransomNote {
+		hit[c-'a']--
+		if hit[c-'a'] < 0 {
+			return false
+		}
+	}
+	return true
 }

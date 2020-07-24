@@ -195,3 +195,31 @@ func numSquares(n int) int {
 	}
 	return rst[n]
 }
+
+func closestValue(root *TreeNode, target float64) int {
+	var travel func(n *TreeNode, visitor func(v int) bool) bool
+	travel = func(n *TreeNode, visitor func(v int) bool) bool {
+		if n == nil {
+			return true
+		}
+		if travel(n.Left, visitor) {
+			return true
+		}
+		if visitor(n.Val) {
+			return true
+		}
+		return travel(n.Right, visitor)
+	}
+	ans := 0
+	lastBest := -1.
+	travel(root, func(v int) bool {
+		diff := math.Abs(float64(v) - target)
+		if lastBest > 0 && diff > lastBest {
+			return true
+		}
+		lastBest = diff
+		ans = v
+		return false
+	})
+	return ans
+}

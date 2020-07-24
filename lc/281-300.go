@@ -333,3 +333,36 @@ func lengthOfLIS(nums []int) int {
 	}
 	return maxv
 }
+
+func canWinNim(n int) bool {
+	return n%4 != 0
+}
+
+func canWin(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] == '+' && s[i+1] == '+' {
+			data := []byte(s)
+			data[i] = '-'
+			data[i+1] = '-'
+			if !canWin(string(data)) {
+				return true
+			}
+			data[i] = '+'
+			data[i+1] = '+'
+		}
+	}
+	return false
+}
+
+func generatePossibleNextMoves(s string) []string {
+	var ans []string
+	for i := 0; i < len(s)-1; i++ {
+		if s[i] == '+' && s[i+1] == '+' {
+			data := []byte(s)
+			data[i] = '-'
+			data[i+1] = '-'
+			ans = append(ans, string(data))
+		}
+	}
+	return ans
+}

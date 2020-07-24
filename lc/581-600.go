@@ -32,3 +32,42 @@ func minDistance2(word1 string, word2 string) int {
 
 	return l1 - rst[l1][l2] + l2 - rst[l1][l2]
 }
+
+type NrTreeNode struct {
+	Val      int
+	Children []*NrTreeNode
+}
+
+func postorder(root *NrTreeNode) []int {
+	var ans []int
+
+	var travel func(root *NrTreeNode, ans []int) []int
+	travel = func(root *NrTreeNode, ans []int) []int {
+		if root == nil {
+			return ans
+		}
+		for _, c := range root.Children {
+			ans = travel(c, ans)
+		}
+		ans = append(ans, root.Val)
+		return ans
+	}
+	return travel(root, ans)
+}
+
+func preorder(root *NrTreeNode) []int {
+	var ans []int
+
+	var travel func(root *NrTreeNode, ans []int) []int
+	travel = func(root *NrTreeNode, ans []int) []int {
+		if root == nil {
+			return ans
+		}
+		ans = append(ans, root.Val)
+		for _, c := range root.Children {
+			ans = travel(c, ans)
+		}
+		return ans
+	}
+	return travel(root, ans)
+}

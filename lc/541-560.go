@@ -73,3 +73,42 @@ func subarraySum(nums []int, k int) int {
 	}
 	return rst
 }
+
+func findCircleNum(M [][]int) int {
+	visitNodes := make([]bool, len(M))
+	index := -1
+	lowLink := make([]int, len(M))
+	indexes := make([]int, len(M))
+	for i := range indexes {
+		indexes[i] = -1
+	}
+	ans := 0
+	var dfs func(at int)
+	dfs = func(at int) {
+		index++
+		visitNodes[at] = true
+		border := M[at]
+		lowLink[at] = index
+		indexes[at] = index
+		for j := 0; j < len(border); j++ {
+			if at == j || border[j] == 0 {
+				continue
+			}
+			if visitNodes[j] {
+				lowLink[at] = min(lowLink[at], indexes[j])
+			} else {
+				dfs(j)
+				lowLink[at] = min(lowLink[at], lowLink[j])
+			}
+		}
+		if lowLink[at] == indexes[at] {
+			ans++
+		}
+	}
+	for i := 0; i < len(M); i++ {
+		if indexes[i] == -1 {
+			dfs(i)
+		}
+	}
+	return ans
+}

@@ -493,3 +493,39 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	p.Next = nil
 	return slow
 }
+
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func postorderTraversal(root *TreeNode) []int {
+	if root == nil {
+		return nil
+	}
+	var stack []*TreeNode
+	stack = append(stack, root)
+	visited := map[*TreeNode]bool{}
+	var ans []int
+	for len(stack) > 0 {
+		top := stack[len(stack)-1]
+		inserted := false
+		if top.Right != nil && !visited[top.Right] {
+			stack = append(stack, top.Right)
+			inserted = true
+		}
+		if top.Left != nil && !visited[top.Left] {
+			stack = append(stack, top.Left)
+			inserted = true
+		}
+		if !inserted {
+			ans = append(ans, top.Val)
+			stack = stack[:len(stack)-1]
+			visited[top] = true
+		}
+	}
+	return ans
+}

@@ -1,5 +1,7 @@
 package lc
 
+import "sort"
+
 /**
  * // This is the interface that allows for creating nested lists.
  * // You should not implement it, or speculate about its implementation
@@ -264,4 +266,50 @@ func numberOfPatterns(m int, n int) int {
 	rst += (rst - old) * 3
 	nextTravel(5)
 	return rst
+}
+
+type SummaryRanges struct {
+	hit [][]int
+}
+
+/** Initialize your data structure here. */
+func ConstructorSummaryRanges() SummaryRanges {
+	return SummaryRanges{}
+}
+
+func (this *SummaryRanges) AddNum(val int) {
+	if len(this.hit) == 0 {
+		this.hit = append(this.hit, []int{val, val})
+		return
+	}
+	index := sort.Search(len(this.hit), func(i int) bool {
+		return this.hit[i][0] >= val
+	})
+	if index < len(this.hit) && this.hit[index][0] == val {
+		return
+	}
+
+	mergePre := index > 0 && val <= this.hit[index-1][1]+1
+	mergePost := index < len(this.hit) && val+1 == this.hit[index][0]
+	if mergePre && mergePost {
+		this.hit[index-1][1] = this.hit[index][1]
+		for i := index + 1; i < len(this.hit); i++ {
+			this.hit[i-1] = this.hit[i]
+		}
+		this.hit = this.hit[:len(this.hit)-1]
+	} else if mergePre && !mergePost {
+		this.hit[index-1][1] = max(this.hit[index-1][1], val)
+	} else if !mergePre && mergePost {
+		this.hit[index][0] = val
+	} else {
+		this.hit = append(this.hit, nil)
+		for i := len(this.hit) - 1; i > index; i-- {
+			this.hit[i] = this.hit[i-1]
+		}
+		this.hit[index] = []int{val, val}
+	}
+}
+
+func (this *SummaryRanges) GetIntervals() [][]int {
+	return this.hit
 }

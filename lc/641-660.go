@@ -139,3 +139,20 @@ func dist(i, j int) int {
 	}
 	return i - j
 }
+
+func judgeCircle(moves string) bool {
+	u, d, l, r := 0, 0, 0, 0
+	for _, s := range moves {
+		switch s {
+		case 'U':
+			u++
+		case 'D':
+			d++
+		case 'L':
+			l++
+		case 'R':
+			r++
+		}
+	}
+	return u == d && l == r
+}

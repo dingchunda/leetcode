@@ -1,5 +1,7 @@
 package lc
 
+import "math"
+
 func isBipartite(graph [][]int) bool {
 	visited := map[int]int{}
 	var dfs func(at int) bool
@@ -30,4 +32,27 @@ func isBipartite(graph [][]int) bool {
 		}
 	}
 	return true
+}
+
+func minDiffInBST(root *TreeNode) int {
+	var travel func(n *TreeNode, visitor func(v int))
+	travel = func(n *TreeNode, visitor func(v int)) {
+		if n == nil {
+			return
+		}
+		travel(n.Left, visitor)
+		visitor(n.Val)
+		travel(n.Right, visitor)
+	}
+	last := -1
+	ans := math.MaxInt32
+	travel(root, func(v int) {
+		if last > 0 {
+			if diff := v - last; diff < ans {
+				ans = diff
+			}
+		}
+		last = v
+	})
+	return ans
 }

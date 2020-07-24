@@ -509,3 +509,34 @@ func isValid(s string) bool {
 	}
 	return len(stack) == 0
 }
+
+func isMatch(s string, p string) bool {
+	dp := make([][]int, len(s)+1)
+	for i := range dp {
+		dp[i] = make([]int, len(p)+1)
+	}
+	dp[0][0] = 1
+	var match func(s, p string) bool
+	match = func(s, p string) bool {
+		if len(p) == 0 {
+			return len(s) == 0
+		}
+		if dp[len(s)][len(p)] > 0 {
+			return dp[len(s)][len(p)] == 1
+		}
+		var ans bool
+		firstMatch := len(s) > 0 && (s[0] == p[0] || p[0] == '.')
+		if len(p) >= 2 && p[1] == '*' {
+			ans = isMatch(s, p[2:]) || firstMatch && isMatch(s[1:], p)
+		} else {
+			ans = firstMatch && isMatch(s[1:], p[1:])
+		}
+		if ans {
+			dp[len(s)][len(p)] = 1
+		} else {
+			dp[len(s)][len(p)] = 2
+		}
+		return ans
+	}
+	return match(s, p)
+}

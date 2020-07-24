@@ -274,3 +274,34 @@ func lengthOfLongestSubstringKDistinct(s string, K int) int {
 	}
 	return ans
 }
+
+func countComponents(n int, edges [][]int) int {
+	parent := make([]int, n)
+	for i := range parent {
+		parent[i] = -1
+	}
+	var find func(at int) int
+	find = func(at int) int {
+		if parent[at] == -1 {
+			return at
+		}
+		return find(parent[at])
+	}
+	var merge = func(i, j int) {
+		seti := find(i)
+		setj := find(j)
+		if seti != setj {
+			parent[seti] = setj
+		}
+	}
+	for _, e := range edges {
+		merge(e[0], e[1])
+	}
+	ans := 0
+	for _, p := range parent {
+		if p == -1 {
+			ans++
+		}
+	}
+	return ans
+}

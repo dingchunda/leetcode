@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 /**
@@ -330,4 +331,54 @@ func combinationSum(candidates []int, target int) [][]int {
 		}
 	}
 	return rst[target]
+}
+
+func longestValidParentheses(s string) int {
+	var stack []string
+	ans := 0
+	for _, c := range s {
+		if c == '(' {
+			stack = append(stack, string(c))
+		} else {
+			if len(stack) == 0 {
+				continue
+			}
+			if stack[len(stack)-1] == "(" {
+				stack[len(stack)-1] = "2"
+				sum := 2
+				if len(stack) >= 2 && stack[len(stack)-2] != "(" {
+					num, _ := strconv.ParseInt(stack[len(stack)-2], 10, 32)
+					sum += int(num)
+					stack[len(stack)-2] = strconv.Itoa(sum)
+					stack = stack[:len(stack)-1]
+				}
+				if sum > ans {
+					ans = sum
+				}
+			} else {
+				// a number
+				if len(stack) == 1 {
+					stack = stack[:0]
+				} else {
+					//  (,num, ( ,num
+					//  (  , (  ,num
+					num, _ := strconv.ParseInt(stack[len(stack)-1], 10, 32)
+					sum := int(num) + 2
+					if len(stack) >= 3 && stack[len(stack)-3] != "(" {
+						num2, _ := strconv.ParseInt(stack[len(stack)-3], 10, 32)
+						sum += int(num2)
+						stack[len(stack)-3] = strconv.Itoa(sum)
+						stack = stack[:len(stack)-2]
+					} else {
+						stack[len(stack)-2] = strconv.Itoa(sum)
+						stack = stack[:len(stack)-1]
+					}
+					if sum > ans {
+						ans = sum
+					}
+				}
+			}
+		}
+	}
+	return ans
 }
