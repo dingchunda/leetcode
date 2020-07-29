@@ -1,6 +1,9 @@
 package lc
 
-import "sort"
+import (
+	"sort"
+	"strconv"
+)
 
 func canAttendMeetings(intervals [][]int) bool {
 	sort.Slice(intervals, func(i, j int) bool {
@@ -67,4 +70,53 @@ func singleNumber3(nums []int) []int {
 		}
 	}
 	return []int{a, b}
+}
+
+func binaryTreePaths(root *TreeNode) []string {
+	if root == nil {
+		return nil
+	}
+	var ans []string
+	var dfs func(r *TreeNode)
+	var path string
+	dfs = func(r *TreeNode) {
+		if r.Left == nil && r.Right == nil {
+			ans = append(ans, path)
+			return
+		}
+		if r.Left != nil {
+			ln := len(path)
+			path += "->" + strconv.Itoa(r.Left.Val)
+			dfs(r.Left)
+			path = path[:ln]
+		}
+		if r.Right != nil {
+			ln := len(path)
+			path += "->" + strconv.Itoa(r.Right.Val)
+			dfs(r.Left)
+			path = path[:ln]
+		}
+	}
+	path = strconv.Itoa(root.Val)
+	dfs(root)
+	return ans
+}
+
+func countUnivalSubtrees(root *TreeNode) int {
+	ans := 0
+	var dfs func(r *TreeNode) bool
+	dfs = func(r *TreeNode) bool {
+		if r == nil {
+			return true
+		}
+		isLeft := dfs(r.Left)
+		isRight := dfs(r.Right)
+		v := isLeft && isRight && (r.Left == nil || r.Left.Val == r.Val) && (r.Right == nil || r.Right.Val == r.Val)
+		if v {
+			ans++
+		}
+		return v
+	}
+	dfs(root)
+	return ans
 }

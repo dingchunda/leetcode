@@ -235,3 +235,20 @@ func canConstruct(ransomNote string, magazine string) bool {
 	}
 	return true
 }
+
+func findTheDifference(s string, t string) byte {
+	dic := [26]int{}
+	for _, c := range s {
+		dic[c-'a']++
+	}
+	dic2 := [26]int{}
+	for _, c := range t {
+		dic2[c-'a']++
+	}
+	for i := 0; i < 26; i++ {
+		if dic2[i] == dic[i]+1 {
+			return byte(i) + 'a'
+		}
+	}
+	return 0
+}

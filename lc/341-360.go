@@ -313,3 +313,55 @@ func (this *SummaryRanges) AddNum(val int) {
 func (this *SummaryRanges) GetIntervals() [][]int {
 	return this.hit
 }
+
+func isPowerOfFour(num int) bool {
+	return num > 0 && num&(num-1) == 0 && num&0xaaaaaaaa == 0
+}
+
+func rearrangeString(S string, k int) string {
+	if k == 0 || k == 1 {
+		return S
+	}
+	m := map[byte]int{}
+	for _, c := range S {
+		m[byte(c)]++
+	}
+	type pair struct {
+		c   byte
+		cnt int
+	}
+	pool := make([]pair, 0, len(m))
+	for k, v := range m {
+		pool = append(pool, pair{k, v})
+	}
+	sort.Slice(pool, func(i, j int) bool {
+		return pool[i].cnt > pool[j].cnt
+	})
+	var buf []byte
+	dup := map[byte]bool{}
+	for len(pool) > 0 {
+		for i := 0; i < k && len(pool) > 0; i++ {
+			if len(buf)-k >= 0 {
+				delete(dup, buf[len(buf)-k])
+			}
+
+			j := 0
+			for ; j < len(pool) && dup[pool[j].c]; j++ {
+			}
+			if j == len(pool) {
+				return ""
+			}
+
+			buf = append(buf, pool[j].c)
+			pool[j].cnt--
+			for l := j; l < len(pool)-1 && pool[l].cnt < pool[l+1].cnt; l++ {
+				pool[l], pool[l+1] = pool[l+1], pool[l]
+			}
+			if pool[len(pool)-1].cnt == 0 {
+				pool = pool[:len(pool)-1]
+			}
+			dup[buf[len(buf)-1]] = true
+		}
+	}
+	return string(buf)
+}

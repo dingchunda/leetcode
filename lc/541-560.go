@@ -112,3 +112,72 @@ func findCircleNum(M [][]int) int {
 	}
 	return ans
 }
+
+func updateMatrix(matrix [][]int) [][]int {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return nil
+	}
+	row, col := len(matrix), len(matrix[0])
+	ans := make([][]int, row)
+	for i := range ans {
+		ans[i] = make([]int, col)
+	}
+	var buf, tmp []int
+	for i := 0; i < row; i++ {
+		for j := 0; j < col; j++ {
+			if matrix[i][j] == 0 {
+				continue
+			}
+			buf = buf[:0]
+			tmp = tmp[:0]
+			buf = append(buf, i*col+j)
+			visited := map[int]bool{}
+			dis := 0
+			for len(buf) > 0 {
+				tmp = tmp[:0]
+				for _, n := range buf {
+					if visited[n] {
+						continue
+					}
+					visited[n] = true
+					x, y := n/col, n%col
+					if matrix[x][y] == 0 {
+						ans[i][j] = dis
+						goto next
+					}
+					if x > 0 {
+						tmp = append(tmp, n-col)
+					}
+					if x < row-1 {
+						tmp = append(tmp, n+col)
+					}
+					if y > 0 {
+						tmp = append(tmp, n-1)
+					}
+					if y < col-1 {
+						tmp = append(tmp, n+1)
+					}
+				}
+				dis++
+				buf, tmp = tmp, buf
+			}
+		next:
+		}
+	}
+	return ans
+}
+
+func maxDepthMulti(root *NrTreeNode) int {
+	var dfs func(r *NrTreeNode) int
+	dfs = func(r *NrTreeNode) int {
+		if r == nil {
+			return 0
+		}
+		v := 0
+		for _, n := range r.Children {
+			v = max(v, dfs(n))
+		}
+		return v + 1
+	}
+	return dfs(root)
+}

@@ -300,3 +300,69 @@ func minimumTotal(triangle [][]int) int {
 	}
 	return triangle[0][0]
 }
+
+func pathSum(root *TreeNode, sum int) [][]int {
+	if root == nil {
+		return nil
+	}
+	var ans [][]int
+	var dfs func(r *TreeNode)
+	pathSum := 0
+	var path []int
+	dfs = func(r *TreeNode) {
+		if r.Left == nil && r.Right == nil {
+			if pathSum == sum {
+				ans = append(ans, path)
+			}
+			return
+		}
+		if r.Left != nil {
+			path = append(path, r.Left.Val)
+			pathSum += r.Left.Val
+			dfs(r.Left)
+			pathSum -= r.Left.Val
+			path = path[:len(path)-1]
+		}
+		if r.Right != nil {
+			path = append(path, r.Right.Val)
+			pathSum += r.Right.Val
+			dfs(r.Right)
+			pathSum -= r.Right.Val
+			path = path[:len(path)-1]
+		}
+	}
+	path = append(path, root.Val)
+	pathSum = root.Val
+	dfs(root)
+	return ans
+}
+
+func hasPathSum(root *TreeNode, sum int) bool {
+	if root == nil {
+		return false
+	}
+	var dfs func(r *TreeNode) bool
+	pathSum := 0
+	dfs = func(r *TreeNode) bool {
+		if r.Left == nil && r.Right == nil {
+			return pathSum == sum
+		}
+		if r.Left != nil {
+			pathSum += r.Left.Val
+			if dfs(r.Left) {
+				return true
+			}
+			pathSum -= r.Left.Val
+		}
+		if r.Right != nil {
+			pathSum += r.Right.Val
+			if dfs(r.Right) {
+				return true
+			}
+			pathSum -= r.Right.Val
+		}
+		return false
+	}
+	pathSum = root.Val
+	return dfs(root)
+}

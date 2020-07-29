@@ -62,3 +62,17 @@ func longestPalindromeSubseq(s string) int {
 	}
 	return rst[len(s)][len(s)]
 }
+
+func fib(N int) int {
+	if N == 0 {
+		return 0
+	}
+	if N == 1 {
+		return 1
+	}
+	a0, a1 := 0, 1
+	for k := 2; k <= N; k++ {
+		a0, a1 = a1, a0+a1
+	}
+	return a1
+}

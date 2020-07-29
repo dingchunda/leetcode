@@ -1,6 +1,9 @@
 package lc
 
-import "strings"
+import (
+	"container/heap"
+	"strings"
+)
 
 func numJewelsInStones(J string, S string) int {
 	m := map[byte]int{}
@@ -108,4 +111,75 @@ func slidingPuzzle(board [][]int) int {
 		buf, tmp = tmp, buf
 	}
 	return -1
+}
+
+func reorganizeString(S string) string {
+	m := map[byte]int{}
+	for _, c := range S {
+		m[byte(c)]++
+	}
+	lh := &lightHeapOrg{}
+	heap.Init(lh)
+	for k, v := range m {
+		heap.Push(lh, pairOrg{k, v})
+	}
+	var buf []byte
+	for lh.Len() > 0 {
+		if len(buf) > 0 && buf[len(buf)-1] == lh.data[0].c {
+			index := -1
+			if lh.Len() > 1 {
+				index = 1
+			}
+			if lh.Len() > 2 && lh.data[2].cnt > lh.data[1].cnt {
+				index = 2
+			}
+			if index == -1 {
+				return ""
+			}
+			buf = append(buf, lh.data[index].c)
+			lh.data[index].cnt--
+			if lh.data[index].cnt > 0 {
+				heap.Fix(lh, index)
+			} else {
+				lh.data[index].cnt = 1e9
+				heap.Fix(lh, index)
+				heap.Pop(lh)
+			}
+		} else {
+			buf = append(buf, lh.data[0].c)
+			lh.data[0].cnt--
+			if lh.data[0].cnt == 0 {
+				heap.Pop(lh)
+			} else {
+				heap.Fix(lh, 0)
+			}
+		}
+	}
+	return string(buf)
+}
+
+type pairOrg struct {
+	c   byte
+	cnt int
+}
+type lightHeapOrg struct {
+	data []pairOrg
+}
+
+func (l *lightHeapOrg) Push(i interface{}) {
+	l.data = append(l.data, i.(pairOrg))
+}
+func (l *lightHeapOrg) Pop() interface{} {
+	rst := l.data[len(l.data)-1]
+	l.data = l.data[:len(l.data)-1]
+	return rst
+}
+func (l *lightHeapOrg) Swap(i, j int) {
+	l.data[i], l.data[j] = l.data[j], l.data[i]
+}
+func (l *lightHeapOrg) Less(i, j int) bool {
+	return l.data[i].cnt > l.data[j].cnt
+}
+func (l *lightHeapOrg) Len() int {
+	return len(l.data)
 }

@@ -1,6 +1,9 @@
 package lc
 
-import "sort"
+import (
+	"container/heap"
+	"sort"
+)
 
 func canVisitAllRooms(rooms [][]int) bool {
 	visited := make([]bool, len(rooms))
@@ -91,4 +94,62 @@ func maxDistToClosest(seats []int) int {
 		return len(seats) - 1 - lastSit
 	}
 	return bestDis
+}
+
+func mincostToHireWorkers(quality []int, wage []int, K int) float64 {
+	type worker struct {
+		quality int
+		wage    int
+	}
+
+	workers := make([]worker, len(quality))
+	for i := range workers {
+		workers[i] = worker{quality[i], wage[i]}
+	}
+	sort.Slice(workers, func(i, j int) bool {
+		return float64(workers[i].wage)/float64(workers[i].quality) <
+			float64(workers[j].wage)/float64(workers[j].quality)
+	})
+
+	ans := 1e9
+	lp := &lightHeapPayment{}
+	heap.Init(lp)
+
+	sump := 0
+	for i := 0; i < len(workers); i++ {
+		sump += workers[i].quality
+		heap.Push(lp, -workers[i].quality)
+		if lp.Len() > K {
+			sump += heap.Pop(lp).(int)
+		}
+		if lp.Len() == K {
+			c := float64(sump) * float64(workers[i].wage) / float64(workers[i].quality)
+			if c < ans {
+				ans = c
+			}
+		}
+	}
+	return ans
+}
+
+type lightHeapPayment struct {
+	data []int
+}
+
+func (l *lightHeapPayment) Push(i interface{}) {
+	l.data = append(l.data, i.(int))
+}
+func (l *lightHeapPayment) Pop() interface{} {
+	rst := l.data[len(l.data)-1]
+	l.data = l.data[:len(l.data)-1]
+	return rst
+}
+func (l *lightHeapPayment) Swap(i, j int) {
+	l.data[i], l.data[j] = l.data[j], l.data[i]
+}
+func (l *lightHeapPayment) Less(i, j int) bool {
+	return l.data[i] < l.data[j]
+}
+func (l *lightHeapPayment) Len() int {
+	return len(l.data)
 }

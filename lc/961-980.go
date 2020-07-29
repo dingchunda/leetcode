@@ -1,6 +1,7 @@
 package lc
 
 import (
+	"container/heap"
 	"fmt"
 	"sort"
 )
@@ -129,4 +130,50 @@ TRAVEL:
 		}
 	}
 	return rst
+}
+
+func kClosest(points [][]int, K int) [][]int {
+	lh := &lightHeap{}
+	heap.Init(lh)
+
+	for _, p := range points {
+		dis := p[0]*p[0] + p[1]*p[1]
+		if lh.Len() == K {
+			top := lh.data[0]
+			if dis >= top[0] {
+				continue
+			}
+			heap.Pop(lh)
+		}
+		heap.Push(lh, [3]int{dis, p[0], p[1]})
+	}
+	ans := make([][]int, 0, K)
+	for _, d := range lh.data {
+		ans = append(ans, []int{d[1], d[2]})
+	}
+	return ans
+}
+
+type lightHeap struct {
+	data [][3]int
+}
+
+func (l *lightHeap) Push(i interface{}) {
+	l.data = append(l.data, i.([3]int))
+}
+
+func (l *lightHeap) Pop() interface{} {
+	rst := l.data[len(l.data)-1]
+	l.data = l.data[:len(l.data)-1]
+	return rst
+}
+
+func (l *lightHeap) Swap(i, j int) {
+	l.data[i], l.data[j] = l.data[j], l.data[i]
+}
+func (l *lightHeap) Less(i, j int) bool {
+	return l.data[i][0] > l.data[j][0]
+}
+func (l *lightHeap) Len() int {
+	return len(l.data)
 }

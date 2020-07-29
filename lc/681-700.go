@@ -1,6 +1,10 @@
 package lc
 
-import "container/list"
+import (
+	"container/heap"
+	"container/list"
+	"sort"
+)
 
 func maxAreaOfIsland(grid [][]int) int {
 	if len(grid) == 0 {
@@ -100,4 +104,99 @@ func searchBST(root *TreeNode, val int) *TreeNode {
 		return false
 	})
 	return ans
+}
+
+func topKFrequentWord(words []string, k int) []string {
+	table := map[string]int{}
+	for _, w := range words {
+		table[w]++
+	}
+	lp := &lightHeapWord{}
+	heap.Init(lp)
+	for w, fre := range table {
+		if lp.Len() == k {
+			if lp.less(pariWord{w, fre}, lp.data[0]) {
+				continue
+			}
+			heap.Pop(lp)
+		}
+		heap.Push(lp, pariWord{w, fre})
+	}
+	sort.Sort(lp)
+	ans := make([]string, 0, k)
+	for i := len(lp.data) - 1; i >= 0; i-- {
+		ans = append(ans, lp.data[i].word)
+	}
+	return ans
+}
+
+type pariWord struct {
+	word string
+	fre  int
+}
+
+type lightHeapWord struct {
+	data []pariWord
+}
+
+func (l *lightHeapWord) Push(i interface{}) {
+	l.data = append(l.data, i.(pariWord))
+}
+
+func (l *lightHeapWord) Pop() interface{} {
+	rst := l.data[len(l.data)-1]
+	l.data = l.data[:len(l.data)-1]
+	return rst
+}
+
+func (l *lightHeapWord) Swap(i, j int) {
+	l.data[i], l.data[j] = l.data[j], l.data[i]
+}
+func (l *lightHeapWord) less(p1, p2 pariWord) bool {
+	if p1.fre == p2.fre {
+		return p1.word > p2.word
+	}
+	return p1.fre < p2.fre
+}
+
+func (l *lightHeapWord) Less(i, j int) bool {
+	return l.less(l.data[i], l.data[j])
+}
+func (l *lightHeapWord) Len() int {
+	return len(l.data)
+}
+
+func longestUnivaluePath(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	ans := 0
+	var dfs func(r *TreeNode) int
+	dfs = func(r *TreeNode) int {
+		if r.Left == nil && r.Right == nil {
+			return 1
+		}
+		rst := 1
+		sum := 1
+		for _, n := range []*TreeNode{r.Left, r.Right} {
+			if n != nil {
+				v := dfs(n)
+				if n.Val == r.Val {
+					sum += v
+				}
+				if n.Val == r.Val && v+1 > rst {
+					rst = v + 1
+				}
+			}
+		}
+		if sum > ans {
+			ans = sum
+		}
+		return rst
+	}
+	dfs(root)
+	if ans > 1 {
+		return ans - 1
+	}
+	return 0
 }

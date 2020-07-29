@@ -35,3 +35,36 @@ func findJudge(N int, trust [][]int) int {
 	}
 	return -1
 }
+
+func smallestFromLeaf(root *TreeNode) string {
+	if root == nil {
+		return ""
+	}
+	var dfs func(r *TreeNode)
+	var ans string
+	var path []byte
+	dfs = func(r *TreeNode) {
+		if r.Left == nil && r.Right == nil {
+			dst := make([]byte, len(path))
+			copy(dst, path)
+			i, j := 0, len(path)-1
+			for i < j {
+				dst[i], dst[j] = dst[j], dst[i]
+				i++
+				j--
+			}
+			if s := string(dst); ans == "" || s < ans {
+				ans = s
+			}
+		}
+		for _, n := range []*TreeNode{r.Left, r.Right} {
+			if n != nil {
+				path = append(path, byte(n.Val+'a'))
+				dfs(n)
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	dfs(root)
+	return ""
+}

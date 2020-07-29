@@ -69,3 +69,45 @@ func fourSumCount(A []int, B []int, C []int, D []int) int {
 	}
 	return cnt
 }
+
+func pathSum3(root *TreeNode, sum int) int {
+	if root == nil {
+		return 0
+	}
+	ans := 0
+	var pathSum []int
+	var dfs func(r *TreeNode)
+	dfs = func(r *TreeNode) {
+		for _, p := range pathSum {
+			if p == sum {
+				ans++
+			}
+		}
+		if r.Left != nil {
+			for i := range pathSum {
+				pathSum[i] += r.Left.Val
+			}
+			pathSum = append(pathSum, r.Left.Val)
+			dfs(r.Left)
+			pathSum = pathSum[:len(pathSum)-1]
+			for i := range pathSum {
+				pathSum[i] -= r.Left.Val
+			}
+		}
+		if r.Right != nil {
+			for i := range pathSum {
+				pathSum[i] += r.Right.Val
+			}
+			pathSum = append(pathSum, r.Right.Val)
+			dfs(r.Right)
+			pathSum = pathSum[:len(pathSum)-1]
+			for i := range pathSum {
+				pathSum[i] -= r.Right.Val
+			}
+		}
+
+	}
+	pathSum = append(pathSum, root.Val)
+	dfs(root)
+	return ans
+}

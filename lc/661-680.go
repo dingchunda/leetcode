@@ -80,3 +80,24 @@ func check(s string) bool {
 	}
 	return true
 }
+
+func findSecondMinimumValue(root *TreeNode) int {
+	if root == nil || root.Left == nil && root.Right == nil {
+		return -1
+	}
+	ans := -1
+	for _, n := range []*TreeNode{root.Left, root.Right} {
+		if n != nil {
+			var c int
+			if n.Val == root.Val {
+				c = findSecondMinimumValue(n)
+			} else {
+				c = n.Val
+			}
+			if ans == -1 || (c != -1 && c < ans) {
+				ans = c
+			}
+		}
+	}
+	return ans
+}

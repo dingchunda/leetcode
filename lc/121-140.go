@@ -341,3 +341,28 @@ func wordBreak(s string, wordDict []string) bool {
 	}
 	return rst[len(rst)-1]
 }
+
+func sumNumbers(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	ans := 0
+	sum := 0
+	var dfs func(r *TreeNode)
+	dfs = func(r *TreeNode) {
+		if r.Left == nil && r.Right == nil {
+			ans += sum
+			return
+		}
+		for _, n := range []*TreeNode{r.Left, r.Right} {
+			if n != nil {
+				sum = sum*10 + n.Val
+				dfs(n)
+				sum /= 10
+			}
+		}
+	}
+	sum = root.Val
+	dfs(root)
+	return ans
+}
